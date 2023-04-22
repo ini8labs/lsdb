@@ -91,7 +91,7 @@ func (c *Client) getEventsByFilter(filter interface{}) ([]LotteryEventInfo, erro
 }
 func decodeResultInSlice(results *mongo.Cursor) ([]LotteryEventInfo, error) {
 	var lotteryEvents []LotteryEventInfo
-	if err := results.All(context.TODO(), lotteryEvents); err != nil {
+	if err := results.All(context.TODO(), &lotteryEvents); err != nil {
 		return nil, fmt.Errorf("error decoding the result in LotteryEventInfo slice: %s", err.Error())
 	}
 
