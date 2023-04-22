@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
@@ -55,22 +56,44 @@ func (c *Client) GetEventsByType(eventType string) ([]LotteryEventInfo, error) {
 		return nil, fmt.Errorf("error finding the events: %s", err.Error())
 	}
 
+	return decodeResultInSlice(results)
+}
+
+func (c *Client) GetEventsByDate(date primitive.DateTime) ([]LotteryEventInfo, error) {
+	filter := bson.M{"event_date": date}
+
+	return c.getEventsByFilter(filter)
+}
+
+func (c *Client) GetEventByDateRange(startDate, endDate primitive.DateTime) ([]LotteryEventInfo, error) {
+	filter := bson.M{
+		"event_date": bson.M{
+			"$lte": endDate,
+			"$gte": startDate,
+		},
+	}
+
+	return c.getEventsByFilter(filter)
+}
+
+func (c *Client) GetAllEvents() ([]LotteryEventInfo, error) {
+	filter := bson.M{}
+	return c.getEventsByFilter(filter)
+}
+
+func (c *Client) getEventsByFilter(filter interface{}) ([]LotteryEventInfo, error) {
+	result, err := c.Collection(lotteryEventsInfoCollection).Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return decodeResultInSlice(result)
+}
+func decodeResultInSlice(results *mongo.Cursor) ([]LotteryEventInfo, error) {
 	var lotteryEvents []LotteryEventInfo
 	if err := results.All(context.TODO(), lotteryEvents); err != nil {
 		return nil, fmt.Errorf("error decoding the result in LotteryEventInfo slice: %s", err.Error())
 	}
 
 	return lotteryEvents, nil
-}
-
-func (c *Client) GetEventsByDate() error {
-	return nil
-}
-
-func (c *Client) GetEventByDateRange(date1, date2 string) error {
-	return nil
-}
-
-func (c *Client) GetAllEvents() error {
-	return nil
 }
