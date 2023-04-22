@@ -14,16 +14,16 @@ type LotteryEventInfo struct {
 	Name          string             `bson:"name,omitempty"`
 	EventType     string             `bson:"event_type,omitempty"`
 	WinningNumber int                `bson:"winning_number,omitempty"`
-	createdAt     primitive.DateTime `bson:"created_at,omitempty"`
-	updatedAt     primitive.DateTime `bson:"updated_at,omitempty"`
+	CreatedAt     primitive.DateTime `bson:"created_at,omitempty"`
+	UpdatedAt     primitive.DateTime `bson:"updated_at,omitempty"`
 }
 
 const lotteryEventsInfoCollection = "lottery_events_info"
 
 func (c *Client) AddNewEvent(event LotteryEventInfo) error {
 	t := time.Now()
-	event.createdAt = primitive.NewDateTimeFromTime(t)
-	event.updatedAt = primitive.NewDateTimeFromTime(t)
+	event.CreatedAt = primitive.NewDateTimeFromTime(t)
+	event.UpdatedAt = primitive.NewDateTimeFromTime(t)
 	_, err := c.Collection(lotteryEventsInfoCollection).InsertOne(context.TODO(), &event)
 	if err != nil {
 		return fmt.Errorf("error Inserting new event info: %s", err.Error())
