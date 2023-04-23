@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
 )
 
 type EventParticipantInfo struct {
@@ -55,8 +56,7 @@ func (c *Client) UpdateUserBet(updatedInfo EventParticipantInfo) error {
 }
 
 func (c *Client) GetUserBets(userID primitive.ObjectID) ([]EventParticipantInfo, error) {
-	filter := bson.M{"participant_info.$.user_id": userID}
-
+	filter := bson.M{"participant_info.user_id": userID}
 	result, err := c.Collection(eventParticipantInfoCollection).Find(context.TODO(), filter)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
