@@ -13,7 +13,7 @@ import (
 
 type EventParticipantInfo struct {
 	BetUID          primitive.ObjectID `bson:"_id,omitempty"`
-	EventID         string             `bson:"event_id,omitempty"`
+	EventUID        primitive.ObjectID `bson:"event_id,omitempty"`
 	ParticipantInfo `bson:"participant_info,omitempty"`
 	CreatedAt       primitive.DateTime `bson:"created_at,omitempty"`
 	UpdatedAt       primitive.DateTime `bson:"updated_at,omitempty"`
@@ -85,7 +85,7 @@ func (c *Client) DeleteUserBet(betUID primitive.ObjectID) error {
 	return nil
 }
 
-func (c *Client) GetParticipantsInfoByEventID(eventID string) ([]EventParticipantInfo, error) {
+func (c *Client) GetParticipantsInfoByEventID(eventID primitive.ObjectID) ([]EventParticipantInfo, error) {
 	filter := bson.M{"event_id": eventID}
 
 	result, err := c.Collection(eventParticipantInfoCollection).Find(context.TODO(), filter)
